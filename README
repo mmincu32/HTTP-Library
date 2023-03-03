@@ -1,0 +1,53 @@
+HTTP Library Concept Project in C++
+
+
+	By using the HTTP Protocol, a user gives a HTTP Client different commands, 
+so the user can interact with the book library of the HTTP server located at a specific
+IP address on a specific port.
+	
+	The base functions present in the project are for computing a get request, 
+a post request or a delete request to the server.
+
+	In order to work with payloads having the /application/json format, 
+I decided to use the library /nlohmann/json. 
+
+	I implemented the client in client.cpp. The client continously receives commands 
+from a certain user until the 'exit' command, that ends the program. I also decided to 
+open and close the connection to the server for every command. Here are the descriptions 
+for ohter possible commands:
+
+1. register - the user must enter an username and password to create a new account; a post 
+	      request tells the server about the new account
+
+2. login - the user must enter an username and a password for login. The user can only log in if
+	   no other user is logged in, condition verified by the presence of a session cookie.
+	   A post request is send to the server, and the server sends back a message if incorrect
+	   username or/and password, otherwise a session cookie is created.
+
+3. enter-library - to get access to the library, the HTTP client sends a get request, the session
+		   cookie proving that the user is logged in. Without a cookie, the library cannot
+		   be accessed. Otherwise, a authorization token is provided. 
+
+4. get_books - în acest caz se face cerere de get la ruta către toate cărțile adăugate de 
+	       utilizatorul logat în acel moment, folosind token-ul de autorizație pentru a 
+               demonstra accesul la librărie. Cineva fără acces va avea token NULL și va primi 
+               eroare. În rest pașii sunt aceiași, se deschide conexiunea, se face cererea, 
+               se trimite și se primește de la server, se închide conexiunea cu server-ul.
+
+4. get_books - a HTTP get request is computed to the route to all the books added by the user
+	       until the moment of the request. The HTTP client cannot get access to the library
+	       without the authorization token.
+
+5. get_book - similar with the previous command, but the book ID is also specified in the request
+	      and the route of the request is the route to the given book
+
+6. add_book - the informations about the book to be added are read from stdin (only if there is the
+	      authorization token). This information is added in the payload of the post request to
+	      the library server.
+
+7. delete_book - same as command 6, but with a HTTP delete request
+
+8. logout - by a get request to the logout route, the current user can log out if it is proven that is
+            logged in. The resources are freed at logout.
+
+	For any other command a message suggesting that the command was not found is printed.
